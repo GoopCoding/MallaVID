@@ -1,0 +1,310 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="MallaVID the only skibidi youtueb proxy">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MallaVID a sigma youtue proxy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
+  <style>
+    :root {
+      --primary: #ff0066;
+      --primary-dark: #cc0052;
+      --bg-dark: #0a0a0a;
+      --bg-card: #141414;
+      --text: #ffffff;
+      --text-secondary: #a0a0a0;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .splash-logo {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary), #ff3399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1a1a1a 0%, var(--bg-dark) 100%);
+      perspective: 1000px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform-style: preserve-3d;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .auth-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(45deg, var(--primary), #ff3399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .input-group label {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      color: var(--text-secondary);
+      transition: var(--transition);
+      pointer-events: none;
+    }
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+      transform: translateY(-1.5rem) scale(0.8);
+      color: var(--primary);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+
+    .auth-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .auth-switch {
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .auth-switch span {
+      color: var(--primary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .auth-switch span:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .floating-shapes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .shape {
+      position: absolute;
+      background: linear-gradient(45deg, var(--primary), #ff3399);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 6s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-screen" id="splash">
+    <div class="splash-logo">MallaVID</div>
+  </div>
+  <div class="auth-screen" id="auth">
+    <div class="floating-shapes" id="shapes"></div>
+    <div class="auth-container">
+      <h1 class="auth-title" id="authTitle">Welcome Back</h1>
+      <form id="authForm" onsubmit="handleAuth(event)">
+        <div class="input-group">
+          <input type="text" id="username" placeholder=" " required>
+          <label for="username">Username</label>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder=" " required>
+          <label for="password">Password</label>
+        </div>
+        <button type="submit" class="auth-btn" id="authBtn">Sign In</button>
+        <p class="auth-switch">
+          <span id="authSwitch" onclick="switchAuth()">Create an account</span>
+        </p>
+      </form>
+    </div>
+  </div>
+  <div id="app" style="display: none;">
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const shapes = document.getElementById('shapes');
+      for (let i = 0; i < 5; i++) {
+        const shape = document.createElement('div');
+        shape.className = 'shape';
+        shape.style.width = Math.random() * 200 + 50 + 'px';
+        shape.style.height = shape.style.width;
+        shape.style.left = Math.random() * 100 + '%';
+        shape.style.top = Math.random() * 100 + '%';
+        shape.style.animationDelay = Math.random() * 2 + 's';
+        shapes.appendChild(shape);
+      }
+      gsap.to('.splash-logo', {
+        opacity: 1,
+        scale: 1,
+        duration: 1,
+        ease: 'power4.out'
+      });
+      gsap.to('#splash', {
+        opacity: 0,
+        duration: 0.5,
+        delay: 2,
+        onComplete: () => {
+          document.getElementById('splash').style.display = 'none';
+          gsap.to('.auth-container', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power4.out'
+          });
+        }
+      });
+    });
+    let isLogin = true;
+    const authTitle = document.getElementById('authTitle');
+    const authBtn = document.getElementById('authBtn');
+    const authSwitch = document.getElementById('authSwitch');
+    function switchAuth() {
+      isLogin = !isLogin;
+      gsap.to('.auth-container', {
+        rotateY: '+=180',
+        duration: 0.6,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          if (gsap.getProperty('.auth-container', 'rotateY') >= 90) {
+            authTitle.textContent = isLogin ? 'Welcome Back' : 'Create Account';
+            authBtn.textContent = isLogin ? 'Sign In' : 'Sign Up';
+            authSwitch.textContent = isLogin ? 'Create an account' : 'Sign in instead';
+          }
+        }
+      });
+    }
+    async function handleAuth(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
+        
+        if (isLogin) {
+          if (!accounts[username] || accounts[username] !== password) {
+            throw new Error('Invalid credentials');
+          }
+        } else {
+          if (accounts[username]) {
+            throw new Error('Username already taken');
+          }
+          accounts[username] = password;
+          localStorage.setItem('accounts', JSON.stringify(accounts));
+        }
+        localStorage.setItem('currentUser', username);
+        gsap.to('.auth-screen', {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+          }
+        });
+
+      } catch (error) {
+        gsap.to('.auth-container', {
+          x: [-10, 10, -10, 10, 0],
+          duration: 0.4,
+          ease: 'power2.inOut'
+        });
+        const errorMsg = document.createElement('div');
+        errorMsg.style.color = 'var(--primary)';
+        errorMsg.style.textAlign = 'center';
+        errorMsg.style.marginTop = '1rem';
+        errorMsg.textContent = error.message;
+        
+        const form = document.getElementById('authForm');
+        form.appendChild(errorMsg);
+        
+        setTimeout(() => {
+          gsap.to(errorMsg, {
+            opacity: 0,
+            duration: 0.3,
+            onComplete: () => errorMsg.remove()
+          });
+        }, 3000);
+      }
+    }
+  </script>
+</body>
+</html>
